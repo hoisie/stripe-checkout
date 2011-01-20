@@ -7,46 +7,91 @@
 - http://www.opensource.org/licenses/mit-license.php
 -->
 
+<!--
+- You cannot simply open this as a html file! You
+- need to host it and access it through localhost.
+-->
+
 <html>
   <head>
 	  <title>Stripe checkout</title>
+	  <style>
+	  .badinput {border:2px solid red;}
+	  </style>
   </head>
   
   <body>
-    <div id="checkout_form">
+    <form id="checkout_form">
       <input name="number" placeholder="Card number" title="Card number" />
       <select name="exp_month"></select>
       <select name="exp_year"></select>
-      <input name="pay" type="submit" value="Pay" onclick="javascript:pay()">
-    </div>
+      <input name="pay" type="submit" value="Pay">
+    </form>
     
     <script>
-      var AMOUNT = 2000; // $20
-      var STRIPE_API_KEY = 'pk_dHA9lrZx2If0QQyGU3aHUf8K8J5PW'; // Replace with your own
-      
-      function pay() {
-        // do things
+    var amount = 2000; // $20
+    var STRIPE_API_KEY = 'pk_dHA9lrZx2If0QQyGU3aHUf8K8J5PW'; // Replace with your own
+    
+    function successful_charge(resp) {
+      debug.log(resp)
+      alert('Success!');
+      // redirect 'success.php?charge=' + resp.id
+      // or whatever
+    }
+    
+    function card_error(e) {
+      switch (e.param) {
+        case 'number':
+          $('input[name=number]').addClass('badinput');
+        default:
+          false
       }
-      
-      function month(num) {
-        return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][num];
+    }
+    
+    function bad_error(e) {
+      // Ouch
+      debug.error(e)
+    }
+    
+    function error(e) {
+      debug.log(e);
+      if (e.type == 'card_error') {
+        card_error(e);
+      } else {
+        bad_error(e);
       }
-      
-      function init_expiries() {
-        // Populate the expiry dropdowns
-        var i = 1; while(i <= 12) {$('select[name=exp_month]').append('<option value="' + i + '">' + i + ' - ' + month(i-1) + '</option>'); i++}
-        var y = new Date().getFullYear(); while (y <= (new Date().getFullYear() + 15)) {$('select[name=exp_year]').append('<option value="' + y + '">' + y + '</option>'); y++}
-      }
-      
-      function descriptive_submit_button() {
-        $('input[name=pay]').val('Pay $' + (AMOUNT/100.0).toFixed(2));
-      }
-      
-      function init() {
-        init_expiries();
-        descriptive_submit_button();
-      }
-      window.onload = init;
+    }
+    
+    function pay(submitted) {
+      var card = {}; $.each(submitted, function(i,n) {card[n.name] = n.value});
+      Stripe.executeCharge({amount:amount,currency:'usd',key:STRIPE_API_KEY,card:card}, successful_charge, error);
+      return false;
+    }
+    
+    function month(num) {
+      return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][num];
+    }
+    
+    function init_expiries() {
+      // Populate the expiry dropdowns
+      var i = 1; while(i <= 12) {$('select[name=exp_month]').append('<option value="' + i + '">' + i + ' - ' + month(i-1) + '</option>'); i++}
+      var y = new Date().getFullYear(); while (y <= (new Date().getFullYear() + 15)) {$('select[name=exp_year]').append('<option value="' + y + '">' + y + '</option>'); y++}
+    }
+    
+    function descriptive_submit_button() {
+      $('input[name=pay]').val('Pay $' + (amount/100.0).toFixed(2));
+    }
+    
+    function init() {
+      init_expiries();
+      descriptive_submit_button();
+      $('form').submit(function() {
+        pay($(this).serializeArray());
+        return false;
+      });
+      $('input[name=number]').keydown(function(){$(this).removeClass('badinput')});
+    }
+    window.onload = init;
     </script>
     
     <!-- Stripe's js lib doesn't require JQuery, but we'll use it here for convenience -->
