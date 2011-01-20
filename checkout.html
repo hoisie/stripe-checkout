@@ -48,16 +48,16 @@
     var amount = 2000; // $20
     var STRIPE_API_KEY = 'pk_dHA9lrZx2If0QQyGU3aHUf8K8J5PW'; // Replace with your own
     
-    function successful_charge(resp) {
-      debug.log(resp);
+    function successful_charge(charge) {
+      debug.log(charge);
 
       wipe_errors();
       descriptive_submit_button();
-      $('input[name=pay]').val('Paid');
+      $('input[name=pay]').val('Redirecting...');
       
-      // redirect 'success.php?charge=' + resp.id
+      // redirect 'success.php?charge=' + charge.id
       // or whatever
-      $('body').html('<h1>Payment received</h1>');
+      window.location = 'success.html?charge=' + charge.id 
     }
     
     function error_text(msg) {
