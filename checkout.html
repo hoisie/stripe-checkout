@@ -45,7 +45,11 @@
     var STRIPE_API_KEY = 'pk_dHA9lrZx2If0QQyGU3aHUf8K8J5PW'; // Replace with your own
     
     function successful_charge(resp) {
-      debug.log(resp)
+      debug.log(resp);
+      
+      descriptive_submit_button();
+      $('input[name=pay]').val('Paid')
+      
       alert('Success!');
       // redirect 'success.php?charge=' + resp.id
       // or whatever
@@ -66,6 +70,9 @@
     }
     
     function error(e) {
+      descriptive_submit_button();
+      $('input[name=pay]').attr('disabled', '');
+      
       debug.log(e);
       if (e.type == 'card_error') {
         card_error(e);
@@ -75,6 +82,8 @@
     }
     
     function pay(submitted) {
+      $('input[name=pay]').attr('disabled', 'disabled');
+      $('input[name=pay]').val('Paying...');
       var card = {}; $.each(submitted, function(i,n) {card[n.name] = n.value});
       Stripe.executeCharge({amount:amount,currency:'usd',key:STRIPE_API_KEY,card:card}, successful_charge, error);
       return false;
