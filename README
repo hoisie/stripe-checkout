@@ -1,5 +1,5 @@
+View at https://eta.stripe.com/sample-checkout/checkout.html
+
 * Get a Stripe account by emailing support@stripe.com
 * Generate a publishable API key at https://manage.stripe.com
 * Add server-side validation to verify the charge
-* ???
-* Profit!
