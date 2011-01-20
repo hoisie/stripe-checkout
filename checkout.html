@@ -17,16 +17,28 @@
 	  <title>Stripe checkout</title>
 	  <style>
 	  .badinput {border:2px solid red;}
+	  #checkout_form img {height:25;}
+	  #topbar {display:inline-block;margin-bottom:1px;margin-left:2px;}
 	  </style>
   </head>
   
   <body>
     <form id="checkout_form">
-      <input name="number" placeholder="Card number" title="Card number" />
-      <select name="exp_month"></select>
-      <select name="exp_year"></select>
-      <input name="pay" type="submit" value="Pay">
+      <div id="topbar">
+        <img src="img/visa.png" />
+        <img src="img/mastercard2.png" />
+        <img src="img/american-express2.png" />
+        <img src="img/discover.jpg" />
+      </div>
+      <div id="ccform">
+        <input name="number" placeholder="Card number" title="Card number" />
+        <select name="exp_month"></select>
+        <select name="exp_year"></select>
+        <input name="pay" type="submit" value="Pay">
+      </div>
     </form>
+    
+    <p><a href="https://github.com/collision/stripe-checkout">Get the source on GitHub</a>
     
     <script>
     var amount = 2000; // $20
