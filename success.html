@@ -1,5 +1,18 @@
 <html>
   <body>
     <h1>Payment received</h1>
+    
+    <div style="width:500px">
+      <p>Upon reaching this page, you'll want to verify that the charge token is indeed a valid paid charge created in the last few seconds. In your server-side pseudocode:</p>
+    
+      <pre><tt>
+s = Stripe.client('PRIVATE_API_KEY')
+charge = s.retrieve_charge(id: $GET['charge'])
+if (charge.paid &amp;&amp; (now() - created() &lt; 60)) {
+  // do good things
+} else {
+  // it's a trap!
+}</tt></pre>
+    </div>          
   </body>
 </html>
