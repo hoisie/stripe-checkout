@@ -19,6 +19,7 @@
 	  .badinput {border:2px solid red;}
 	  #checkout_form img {height:25;}
 	  #topbar {display:inline-block;margin-bottom:1px;margin-left:2px;}
+	  #error_text {color:red;margin-left:2px;margin-top:1px;}
 	  </style>
   </head>
   
@@ -36,6 +37,9 @@
         <select name="exp_year"></select>
         <input name="pay" type="submit" value="Pay">
       </div>
+      <div id="error_text">
+        
+      </div>
     </form>
     
     <p><a href="https://github.com/collision/stripe-checkout">Get the source on GitHub</a>
@@ -46,13 +50,22 @@
     
     function successful_charge(resp) {
       debug.log(resp);
-      
+
+      wipe_errors();
       descriptive_submit_button();
-      $('input[name=pay]').val('Paid')
+      $('input[name=pay]').val('Paid');
       
-      alert('Success!');
       // redirect 'success.php?charge=' + resp.id
       // or whatever
+      $('body').html('<h1>Payment received</h1>');
+    }
+    
+    function error_text(msg) {
+      $('#error_text').html(msg);
+    }
+    
+    function wipe_errors() {
+      $('#error_text').html('');
     }
     
     function card_error(e) {
@@ -60,8 +73,9 @@
         case 'number':
           $('input[name=number]').addClass('badinput');
         default:
-          false
+          true
       }
+      error_text(e.message);
     }
     
     function bad_error(e) {
