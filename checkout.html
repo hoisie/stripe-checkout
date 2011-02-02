@@ -119,8 +119,8 @@
           // calling init will reset the form to its ready-to-charge state
           init_expiries();
           descriptive_submit_button();
-          $('form').unbind('submit');
-          $('form').submit(function() {
+          $('form#checkout_form').unbind('submit');
+          $('form#checkout_form').submit(function() {
             return Checkout.pay($(this).serializeArray());
           });
           $('input[name=number]').unbind('keydown');
