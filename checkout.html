@@ -33,7 +33,7 @@
         <img src="img/jcb.png" id="img-jcb" />
       </div>
       <div id="ccform">
-        <input name="number" placeholder="Card number" title="Card number" onkeyup="identifyCard()" />
+        <input name="number" placeholder="Card number" title="Card number" />
         <select name="exp_month"></select>
         <select name="exp_year"></select>
         <input name="pay" type="submit" value="Pay">
@@ -114,6 +114,27 @@
         $('input[name=pay]').val('Pay $' + (amount/100.0).toFixed(2));
       }
       
+      function resetImages() {
+        $('#topbar img').css('opacity', '1.0');
+      }
+      
+      function highlightImg(name) {
+        $('#topbar img').css('opacity', '0.2');
+        $('#topbar #img-' + name).css('opacity', '1.0');
+      }
+      
+      function identifyCard() {
+        var number = $('#checkout_form input[name=number]').val();
+        if (number.length > 2) return false;
+        if (number.length < 2) {resetImages(); return false}
+        
+        if (number[0] == '4') highlightImg('visa')
+        else if (number[0] == '5') highlightImg('mastercard')
+        else if (['34', '37'].indexOf(number.substring(0,2)) > -1) highlightImg('american-express')
+        else if (number.substring(0,2) == '35') highlightImg('jcb')
+        else if (['60', '62', '64', '65'].indexOf(number.substring(0,2)) > -1) highlightImg('discover')
+      }
+            
       return {
         init : function(){
           // calling init will reset the form to its ready-to-charge state
@@ -125,6 +146,7 @@
           });
           $('input[name=number]').unbind('keydown');
           $('input[name=number]').keydown(function(){$(this).removeClass('badinput')});
+          $('#checkout_form input[name=number]').keyup(identifyCard);
         },
         pay : function (submitted) {
           $('input[name=pay]').attr('disabled', 'disabled');
@@ -135,53 +157,6 @@
         }
       }
     })();
-
-	var ccForm = document.getElementById('checkout_form');
-	var ccImgs = getCCImgs();
-	function identifyCard(){
-		if(ccForm.number.value.length==2){
-			var checkNum = ccForm.number.value.substring(0,2);
-			switch(true){
-				case checkNum >= 40 && checkNum <= 49:
-					highlightImage(0);
-					break;
-				case checkNum >= 51 && checkNum <= 55 :
-					highlightImage(1);
-					break;
-				case checkNum == 34 || checkNum == 37:
-					highlightImage(2);
-					break;
-				case checkNum == 60 || checkNum == 62 || checkNum == 64 || checkNum == 65:
-					highlightImage(3);
-					break;
-				case checkNum == 35:
-					highlightImage(4);
-					break;	
-				default: 
-					highlightImage(-1);
-					break;
-			}
-		}
-		if(ccForm.number.value.length<2){
-			for(var i=0;i<ccImgs.length;i++){ccImgs[i].style.opacity = 1.0}
-		}
-	}
-
-	function getCCImgs(){
-		var els = ["img-visa", "img-mastercard", "img-american-express", "img-discover", "img-jcb"]; var imgs = [];
-		for(var i=0;i<els.length;i++){imgs.push(document.getElementById(els[i]));}
-		return imgs;
-	}
-
-	function highlightImage(no){
-		for(var i=0;i<ccImgs.length;i++){
-			if(i==no){
-				ccImgs[i].style.opacity = 1.0;
-			}else{
-				ccImgs[i].style.opacity = 0.2;
-			}
-		}
-	}
 
     window.onload = Checkout.init;
     </script>
